@@ -20,28 +20,32 @@ variable "ms_txt" {
 
 variable "additional_txt_records" {
     default     = []
-    type        = "list"
+    type        = list(string)
     description = "List of additional TXT records to add to the domain"
 }
 
 variable "enable_exchange" {
     description = "Controls if the DNS records for Exchange Online should be created."
     default     = true
+    type        = bool
 }
 
 variable "enable_sfb" {
     description = "Controls if the DNS records for Skype for Business should be created."
     default     = true
+    type        = bool
 }
 
 variable "enable_mdm" {
     description = "Controls if the DNS records for Mobile Device Management should be created."
     default     = true
+    type        = bool
 }
 
 variable "enable_dkim" {
     description = "Controls if the DNS records for DKIM should be created."
     default     = false
+    type        = bool
 }
 
 variable "tenant_name" {
@@ -52,6 +56,7 @@ variable "tenant_name" {
 variable "enable_dmarc" {
     description = "Controls if the DNS record for DMARC should be created."
     default     = false
+    type        = bool
 }
 
 variable "dmarc_record" {
@@ -62,6 +67,7 @@ variable "dmarc_record" {
 variable "enable_custom_mx" {
     description = "Controls whether a custom MX record should be created instead of the O365 default."
     default     = false
+    type        = bool
 }
 
 variable "custom_mx_record" {

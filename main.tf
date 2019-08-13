@@ -1,5 +1,5 @@
 provider "template" {
-    version = "~> 1.0"
+    version = "~> 2.0"
 }
 
 data "template_file" "domain_guid" {
@@ -59,63 +59,63 @@ locals {
 #################
 
 resource "aws_route53_record" "mx" {
-    count   = "${var.enable_exchange && var.enable_custom_mx < 1 ? 1 : 0}"
+    count   = "${var.enable_exchange && ! var.enable_custom_mx ? 1 : 0}"
 
-    zone_id = "${var.zone_id}"
+    zone_id = var.zone_id
     name    = ""
-    records = ["${local.o365_mx}"]
+    records = [local.o365_mx]
     type    = "MX"
-    ttl     = "${var.ttl}"
+    ttl     = var.ttl
 }
 
 resource "aws_route53_record" "custom_mx" {
     count   = "${var.enable_exchange && var.enable_custom_mx && length(var.custom_mx_record) > 0 ? 1 : 0}"
 
-    zone_id = "${var.zone_id}"
+    zone_id = var.zone_id
     name    = ""
-    records = ["${var.custom_mx_record}"]
+    records = [var.custom_mx_record]
     type    = "MX"
-    ttl     = "${var.ttl}"
+    ttl     = var.ttl
 }
 
 resource "aws_route53_record" "autodiscover" {
     count   = "${var.enable_exchange ? 1 : 0}"
 
-    zone_id = "${var.zone_id}"
+    zone_id = var.zone_id
     name    = "autodiscover"
     records = ["autodiscover.outlook.com"]
     type    = "CNAME"
-    ttl     = "${var.ttl}"
+    ttl     = var.ttl
 }
 
 resource "aws_route53_record" "spf" {
     count   = "${var.enable_exchange && length(var.ms_txt) > 0 ? 1 : 0}"
 
-    zone_id = "${var.zone_id}"
+    zone_id = var.zone_id
     name    = ""
-    records = ["MS=${var.ms_txt}","${local.o365_spf}", "${var.additional_txt_records}"]
+    records = flatten(["MS=${var.ms_txt}", local.o365_spf, var.additional_txt_records])
     type    = "TXT"
-    ttl     = "${var.ttl}"
+    ttl     = var.ttl
 }
 
 resource "aws_route53_record" "dmarc" {
     count   = "${var.enable_exchange && var.enable_dmarc && length(var.dmarc_record) > 0 ? 1 : 0}"
 
-    zone_id = "${var.zone_id}"
+    zone_id = var.zone_id
     name    = "_dmarc"
-    records = ["${var.dmarc_record}"]
+    records = [var.dmarc_record]
     type    = "TXT"
-    ttl     = "${var.ttl}"
+    ttl     = var.ttl
 }
 
 resource "aws_route53_record" "dkim" {
     count   = "${var.enable_exchange && var.enable_dkim && length(var.tenant_name) > 0 ? length(local.dkim) : 0}"
 
-    zone_id = "${var.zone_id}"
+    zone_id = var.zone_id
     name    = "${lookup(local.dkim[count.index], "name")}"
     records = ["${lookup(local.dkim[count.index], "value")}"]
     type    = "CNAME"
-    ttl     = "${var.ttl}"
+    ttl     = var.ttl
 }
 
 ####################
@@ -125,11 +125,11 @@ resource "aws_route53_record" "dkim" {
 resource "aws_route53_record" "sfb" {
     count   = "${var.enable_sfb ? length(local.sfb) : 0}"
 
-    zone_id = "${var.zone_id}"
+    zone_id = var.zone_id
     name    = "${lookup(local.sfb[count.index], "name")}"
     records = ["${lookup(local.sfb[count.index], "record")}"]
     type    = "${lookup(local.sfb[count.index], "type")}"
-    ttl     = "${var.ttl}"
+    ttl     = var.ttl
 }
 
 ##########################
@@ -139,9 +139,9 @@ resource "aws_route53_record" "sfb" {
 resource "aws_route53_record" "mdm" {
     count   = "${var.enable_mdm ? length(local.mdm) : 0}"
 
-    zone_id = "${var.zone_id}"
+    zone_id = var.zone_id
     name    = "${lookup(local.mdm[count.index], "name")}"
     records = ["${lookup(local.mdm[count.index], "record")}"]
     type    = "CNAME"
-    ttl     = "${var.ttl}"
+    ttl     = var.ttl
 }
