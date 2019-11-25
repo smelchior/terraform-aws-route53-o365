@@ -89,7 +89,7 @@ resource "aws_route53_record" "autodiscover" {
 }
 
 resource "aws_route53_record" "spf" {
-  count = "${var.enable_exchange && length(var.ms_txt) > 0 ? 1 : 0}"
+  count = var.enable_exchange && length(var.ms_txt) > 0 ? 1 : 0
 
   zone_id = var.zone_id
   name    = ""
