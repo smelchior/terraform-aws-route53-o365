@@ -24,6 +24,13 @@ variable "additional_txt_records" {
   description = "List of additional TXT records to add to the domain"
 }
 
+variable "additional_spf_record_entries" {
+  default     = ""
+  type        = string
+  description = "Additional entries in the SPF record"
+}
+
+
 variable "enable_exchange" {
   description = "Controls if the DNS records for Exchange Online should be created."
   default     = true

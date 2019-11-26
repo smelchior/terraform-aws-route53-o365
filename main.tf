@@ -8,7 +8,7 @@ data "template_file" "domain_guid" {
 
 locals {
   o365_mx  = format("10 %s.mail.protection.outlook.com", data.template_file.domain_guid.rendered)
-  o365_spf = "v=spf1 include:spf.protection.outlook.com -all"
+  o365_spf = "v=spf1 include:spf.protection.outlook.com ${var.additional_spf_record_entries} -all"
   dkim_dom = format("%s._domainkey.%s.onmicrosoft.com", data.template_file.domain_guid.rendered, var.tenant_name)
   dkim = [
     {
